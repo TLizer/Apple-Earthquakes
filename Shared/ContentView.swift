@@ -139,7 +139,7 @@ extension ContentView {
 
         ToolbarItemGroup(placement: .bottomBar) {
             RefreshButton {
-                async {
+                Task {
                     await fetchQuakes()
                 }
             }
@@ -155,7 +155,7 @@ extension ContentView {
 
             if editMode == .active {
                 DeleteButton {
-                    async {
+                    Task {
                         await deleteQuakes(for: selection)
                     }
                 }
@@ -176,14 +176,14 @@ extension ContentView {
 
         ToolbarItemGroup(placement: .navigation) {
             RefreshButton {
-                async {
+                Task {
                     await fetchQuakes()
                 }
             }
             .disabled(isLoading)
             Spacer()
             DeleteButton {
-                async {
+                Task {
                     await deleteQuakes(for: selection)
                 }
             }

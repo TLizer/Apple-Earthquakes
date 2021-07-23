@@ -40,7 +40,7 @@ class QuakesProvider {
         // Observe Core Data remote change notifications on the queue where the changes were made.
         notificationToken = NotificationCenter.default.addObserver(forName: .NSPersistentStoreRemoteChange, object: nil, queue: nil) { note in
             self.logger.debug("Received a persistent store remote change notification.")
-            async {
+            Task {
                 await self.fetchPersistentHistory()
             }
         }
