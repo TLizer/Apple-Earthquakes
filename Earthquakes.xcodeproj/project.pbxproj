@@ -24,6 +24,7 @@
 		ADDDB1812625242200241A73 /* QuakeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDDB1802625242200241A73 /* QuakeRow.swift */; };
 		ADDDB1832625249600241A73 /* QuakeDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDDB1822625249600241A73 /* QuakeDetail.swift */; };
 		AEBEFF2B2A26F72800358FD2 /* EarthquakesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEBEFF2A2A26F72800358FD2 /* EarthquakesTests.swift */; };
+		AE003E272A23F52400D36DFF /* ContentViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE003E262A23F52400D36DFF /* ContentViewState.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +61,7 @@
 		ADDDB1822625249600241A73 /* QuakeDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuakeDetail.swift; sourceTree = "<group>"; };
 		AEBEFF282A26F72800358FD2 /* EarthquakesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EarthquakesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEBEFF2A2A26F72800358FD2 /* EarthquakesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarthquakesTests.swift; sourceTree = "<group>"; };
+		AE003E262A23F52400D36DFF /* ContentViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +96,7 @@
 			children = (
 				AD43F1E526158A640068AABC /* EarthquakesApp.swift */,
 				AD57B10126561FE1005183D0 /* ContentView.swift */,
+				AE003E262A23F52400D36DFF /* ContentViewState.swift */,
 				AD57B0F426561260005183D0 /* Toolbar Content */,
 				ADFCD5352630D167008A14D0 /* Models */,
 				ADFCD5362630DA13008A14D0 /* Views */,
@@ -303,6 +306,7 @@
 				AD57B10226561FE1005183D0 /* ContentView.swift in Sources */,
 				AD43F1FD26158D5A0068AABC /* QuakeError.swift in Sources */,
 				ADDDB1832625249600241A73 /* QuakeDetail.swift in Sources */,
+				AE003E272A23F52400D36DFF /* ContentViewState.swift in Sources */,
 				AD43F1FA26158CD50068AABC /* Quake.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

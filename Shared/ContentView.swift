@@ -17,16 +17,11 @@ struct ContentView: View {
     @FetchRequest(sortDescriptors: [SortDescriptor(\.time, order: .reverse)])
     private var quakes: FetchedResults<Quake>
 
-    @State private var editMode: EditMode = .inactive
-    @State private var selectMode: SelectMode = .inactive
-    @State private var selection: Set<String> = []
-    @State private var isLoading = false
-    @State private var error: QuakeError?
-    @State private var hasError = false
+    @StateObject private var state = ContentViewState()
 
     var body: some View {
         NavigationView {
-            List(selection: $selection) {
+            List(selection: $state.selection) {
                 ForEach(quakes, id: \.code) { quake in
                     NavigationLink(destination: QuakeDetail(quake: quake)) {
                         QuakeRow(quake: quake)
@@ -35,34 +30,26 @@ struct ContentView: View {
                 .onDelete(perform: deleteQuakes)
             }
             .listStyle(SidebarListStyle())
-            .navigationTitle(title)
+            .navigationTitle(state.title)
             .toolbar(content: toolbarContent)
-            .environment(\.editMode, $editMode)
+            .environment(\.editMode, $state.editMode)
             .refreshable {
                 await fetchQuakes()
             }
 
             EmptyView()
         }
-        .alert(isPresented: $hasError, error: error) { }
+        .alert(isPresented: $state.hasError, error: state.error) { }
     }
 }
 
 // MARK: Core Data
 
 extension ContentView {
-    var title: String {
-        if selectMode.isActive || selection.isEmpty {
-            return "Earthquakes"
-        } else {
-            return "\(selection.count) Selected"
-        }
-    }
-
     private func deleteQuakes(at offsets: IndexSet) {
         let objectIDs = offsets.map { quakes[$0].objectID }
         quakesProvider.deleteQuakes(identifiedBy: objectIDs)
-        selection.removeAll()
+        state.selection.removeAll()
     }
 
     private func deleteQuakes(for codes: Set<String>) async {
@@ -70,23 +57,23 @@ extension ContentView {
             let quakesToDelete = quakes.filter { codes.contains($0.code) }
             try await quakesProvider.deleteQuakes(quakesToDelete)
         } catch {
-            self.error = error as? QuakeError ?? .unexpectedError(error: error)
-            self.hasError = true
+            state.error = error as? QuakeError ?? .unexpectedError(error: error)
+            state.hasError = true
         }
-        selection.removeAll()
-        editMode = .inactive
+        state.selection.removeAll()
+        state.editMode = .inactive
     }
 
     private func fetchQuakes() async {
-        isLoading = true
+        state.isLoading = true
         do {
             try await quakesProvider.fetchQuakes()
             lastUpdated = Date().timeIntervalSince1970
         } catch {
-            self.error = error as? QuakeError ?? .unexpectedError(error: error)
-            self.hasError = true
+            state.error = error as? QuakeError ?? .unexpectedError(error: error)
+            state.hasError = true
         }
-        isLoading = false
+        state.isLoading = false
     }
 }
 
@@ -96,22 +83,22 @@ extension ContentView {
     @ToolbarContentBuilder
     private func toolbarContent() -> some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
-            if editMode == .active {
-                SelectButton(mode: $selectMode) {
-                    if selectMode.isActive {
-                        selection = Set(quakes.map { $0.code })
+            if state.editMode == .active {
+                SelectButton(mode: $state.selectMode) {
+                    if state.selectMode.isActive {
+                        state.selection = Set(quakes.map { $0.code })
                     } else {
-                        selection = []
+                        state.selection = []
                     }
                 }
             }
         }
 
         ToolbarItem(placement: .navigationBarTrailing) {
-            EditButton(editMode: $editMode) {
-                selection.removeAll()
-                editMode = .inactive
-                selectMode = .inactive
+            EditButton(editMode: $state.editMode) {
+                state.selection.removeAll()
+                state.editMode = .inactive
+                state.selectMode = .inactive
             }
         }
 
@@ -121,23 +108,23 @@ extension ContentView {
                     await fetchQuakes()
                 }
             }
-            .disabled(isLoading || editMode == .active)
+            .disabled(state.refreshButtonDisabled)
 
             Spacer()
             ToolbarStatus(
-                isLoading: isLoading,
+                isLoading: state.isLoading,
                 lastUpdated: lastUpdated,
                 quakesCount: quakes.count
             )
             Spacer()
 
-            if editMode == .active {
+            if state.showDeleteButton {
                 DeleteButton {
                     Task {
-                        await deleteQuakes(for: selection)
+                        await deleteQuakes(for: state.selection)
                     }
                 }
-                .disabled(isLoading || selection.isEmpty)
+                .disabled(state.deleteButtonDisabled)
             }
         }
     }
