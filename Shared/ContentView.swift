@@ -17,10 +17,8 @@ struct ContentView: View {
     @FetchRequest(sortDescriptors: [SortDescriptor(\.time, order: .reverse)])
     private var quakes: FetchedResults<Quake>
 
-    #if os(iOS)
     @State private var editMode: EditMode = .inactive
     @State private var selectMode: SelectMode = .inactive
-    #endif
     @State private var selection: Set<String> = []
     @State private var isLoading = false
     @State private var error: QuakeError?
@@ -39,14 +37,10 @@ struct ContentView: View {
             .listStyle(SidebarListStyle())
             .navigationTitle(title)
             .toolbar(content: toolbarContent)
-            #if os(iOS)
             .environment(\.editMode, $editMode)
             .refreshable {
                 await fetchQuakes()
             }
-            #else
-            .frame(minWidth: 320)
-            #endif
 
             EmptyView()
         }
@@ -58,15 +52,11 @@ struct ContentView: View {
 
 extension ContentView {
     var title: String {
-        #if os(iOS)
         if selectMode.isActive || selection.isEmpty {
             return "Earthquakes"
         } else {
             return "\(selection.count) Selected"
         }
-        #else
-        return "Earthquakes"
-        #endif
     }
 
     private func deleteQuakes(at offsets: IndexSet) {
@@ -84,9 +74,7 @@ extension ContentView {
             self.hasError = true
         }
         selection.removeAll()
-        #if os(iOS)
         editMode = .inactive
-        #endif
     }
 
     private func fetchQuakes() async {
@@ -107,16 +95,6 @@ extension ContentView {
 extension ContentView {
     @ToolbarContentBuilder
     private func toolbarContent() -> some ToolbarContent {
-        #if os(iOS)
-        toolbarContent_iOS()
-        #else
-        toolbarContent_macOS()
-        #endif
-    }
-
-    #if os(iOS)
-    @ToolbarContentBuilder
-    private func toolbarContent_iOS() -> some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
             if editMode == .active {
                 SelectButton(mode: $selectMode) {
@@ -163,34 +141,6 @@ extension ContentView {
             }
         }
     }
-    #else
-    @ToolbarContentBuilder
-    private func toolbarContent_macOS() -> some ToolbarContent {
-        ToolbarItemGroup(placement: .status) {
-            ToolbarStatus(
-                isLoading: isLoading,
-                lastUpdated: lastUpdated,
-                quakesCount: quakes.count
-            )
-        }
-
-        ToolbarItemGroup(placement: .navigation) {
-            RefreshButton {
-                Task {
-                    await fetchQuakes()
-                }
-            }
-            .disabled(isLoading)
-            Spacer()
-            DeleteButton {
-                Task {
-                    await deleteQuakes(for: selection)
-                }
-            }
-            .disabled(isLoading || selection.isEmpty)
-        }
-    }
-    #endif
 }
 
 struct ContentView_Previews: PreviewProvider {
