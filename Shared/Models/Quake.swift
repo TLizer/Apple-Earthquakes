@@ -65,14 +65,14 @@ extension Quake {
     
     /// An earthquake for use with canvas previews.
     static var preview: Quake {
-        let quakes = Quake.makePreviews(count: 1)
+        let quakes = Quake.makePreviews(count: 1, provider: .preview)
         return quakes[0]
     }
 
     @discardableResult
-    static func makePreviews(count: Int) -> [Quake] {
+    static func makePreviews(count: Int, provider: QuakesProvider) -> [Quake] {
         var quakes = [Quake]()
-        let viewContext = QuakesProvider.preview.container.viewContext
+        let viewContext = provider.container.viewContext
         for index in 0..<count {
             let quake = Quake(context: viewContext)
             quake.code = UUID().uuidString

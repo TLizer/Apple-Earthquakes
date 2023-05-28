@@ -27,7 +27,7 @@ class QuakesProvider {
     /// A quakes provider for use with canvas previews.
     static let preview: QuakesProvider = {
         let provider = QuakesProvider(inMemory: true)
-        Quake.makePreviews(count: 10)
+        Quake.makePreviews(count: 10, provider: provider)
         return provider
     }()
 
