@@ -19,7 +19,6 @@ struct ToolbarStatus: View {
                 Text("Checking for Earthquakes...")
                 Spacer()
             } else if lastUpdated == Date.distantFuture.timeIntervalSince1970 {
-                Spacer()
                 Text("\(quakesCount) Earthquakes")
                     .foregroundStyle(Color.secondary)
             } else {
