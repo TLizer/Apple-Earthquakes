@@ -34,4 +34,17 @@ final class ContentViewStateTests: XCTestCase {
         let title = state.title
         XCTAssertEqual(title, "2 Selected")
     }
+    
+    func testTitleWithTwoSelectionsAndActiveMode() {
+        // Given ContentViewState
+        let state = ContentViewState()
+        
+        // When selection contains two items but selectMode is active
+        state.selection = ["1", "2"]
+        state.selectMode = .active
+        
+        // Then title should be "Earthquakes"
+        let title = state.title
+        XCTAssertEqual(title, "Earthquakes")
+    }
 }
