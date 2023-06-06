@@ -9,71 +9,30 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
-    var quakesProvider: QuakesProvider = .shared
 
-    @AppStorage("lastUpdated")
-    private var lastUpdated = Date.distantFuture.timeIntervalSince1970
-
-    @FetchRequest(sortDescriptors: [SortDescriptor(\.time, order: .reverse)])
-    private var quakes: FetchedResults<Quake>
-
-    @StateObject private var state = ContentViewState()
+    @ObservedObject var viewModel: ContentViewModel
 
     var body: some View {
         NavigationView {
-            List(selection: $state.selection) {
-                ForEach(quakes, id: \.code) { quake in
+            List(selection: $viewModel.selection) {
+                ForEach(viewModel.quakes, id: \.code) { quake in
                     NavigationLink(destination: QuakeDetail(quake: quake)) {
                         QuakeRow(quake: quake)
                     }
                 }
-                .onDelete(perform: deleteQuakes)
+                .onDelete(perform: viewModel.deleteQuakes)
             }
             .listStyle(SidebarListStyle())
-            .navigationTitle(state.title)
+            .navigationTitle(viewModel.title)
             .toolbar(content: toolbarContent)
-            .environment(\.editMode, $state.editMode)
+            .environment(\.editMode, $viewModel.editMode)
             .refreshable {
-                await fetchQuakes()
+                await viewModel.fetchQuakes()
             }
 
             EmptyView()
         }
-        .alert(isPresented: $state.hasError, error: state.error) { }
-    }
-}
-
-// MARK: Core Data
-
-extension ContentView {
-    private func deleteQuakes(at offsets: IndexSet) {
-        let objectIDs = offsets.map { quakes[$0].objectID }
-        quakesProvider.deleteQuakes(identifiedBy: objectIDs)
-        state.selection.removeAll()
-    }
-
-    private func deleteQuakes(for codes: Set<String>) async {
-        do {
-            let quakesToDelete = quakes.filter { codes.contains($0.code) }
-            try await quakesProvider.deleteQuakes(quakesToDelete)
-        } catch {
-            state.error = error as? QuakeError ?? .unexpectedError(error: error)
-            state.hasError = true
-        }
-        state.selection.removeAll()
-        state.editMode = .inactive
-    }
-
-    private func fetchQuakes() async {
-        state.isLoading = true
-        do {
-            try await quakesProvider.fetchQuakes()
-            lastUpdated = Date().timeIntervalSince1970
-        } catch {
-            state.error = error as? QuakeError ?? .unexpectedError(error: error)
-            state.hasError = true
-        }
-        state.isLoading = false
+        .alert(isPresented: $viewModel.hasError, error: viewModel.error) { }
     }
 }
 
@@ -83,48 +42,48 @@ extension ContentView {
     @ToolbarContentBuilder
     private func toolbarContent() -> some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
-            if state.editMode == .active {
-                SelectButton(mode: $state.selectMode) {
-                    if state.selectMode.isActive {
-                        state.selection = Set(quakes.map { $0.code })
+            if viewModel.editMode == .active {
+                SelectButton(mode: $viewModel.selectMode) {
+                    if viewModel.selectMode.isActive {
+                        viewModel.selection = Set(viewModel.quakes.map { $0.code })
                     } else {
-                        state.selection = []
+                        viewModel.selection = []
                     }
                 }
             }
         }
 
         ToolbarItem(placement: .navigationBarTrailing) {
-            EditButton(editMode: $state.editMode) {
-                state.selection.removeAll()
-                state.editMode = .inactive
-                state.selectMode = .inactive
+            EditButton(editMode: $viewModel.editMode) {
+                viewModel.selection.removeAll()
+                viewModel.editMode = .inactive
+                viewModel.selectMode = .inactive
             }
         }
 
         ToolbarItemGroup(placement: .bottomBar) {
             RefreshButton {
                 Task {
-                    await fetchQuakes()
+                    await viewModel.fetchQuakes()
                 }
             }
-            .disabled(state.refreshButtonDisabled)
+            .disabled(viewModel.refreshButtonDisabled)
 
             Spacer()
             ToolbarStatus(
-                isLoading: state.isLoading,
-                lastUpdated: lastUpdated,
-                quakesCount: quakes.count
+                isLoading: viewModel.isLoading,
+                lastUpdated: viewModel.lastUpdated,
+                quakesCount: viewModel.quakes.count
             )
             Spacer()
 
-            if state.showDeleteButton {
+            if viewModel.showDeleteButton {
                 DeleteButton {
                     Task {
-                        await deleteQuakes(for: state.selection)
+                        await viewModel.deleteQuakes(for: viewModel.selection)
                     }
                 }
-                .disabled(state.deleteButtonDisabled)
+                .disabled(viewModel.deleteButtonDisabled)
             }
         }
     }
@@ -133,8 +92,11 @@ extension ContentView {
 struct ContentView_Previews: PreviewProvider {
     static let quakesProvider = QuakesProvider.preview
     static var previews: some View {
-        ContentView(quakesProvider: quakesProvider)
-            .environment(\.managedObjectContext,
-                          quakesProvider.container.viewContext)
+        ContentView(
+            viewModel: ContentViewModel(
+                quakesProvider: quakesProvider,
+                context: quakesProvider.container.viewContext
+            )
+        )
     }
 }

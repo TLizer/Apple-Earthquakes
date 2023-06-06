@@ -11,8 +11,12 @@ import SwiftUI
 struct EarthquakesApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, QuakesProvider.shared.container.viewContext)
+            ContentView(
+                viewModel: ContentViewModel(
+                    quakesProvider: QuakesProvider.shared,
+                    context: QuakesProvider.shared.container.viewContext
+                )
+            )
         }
     }
 }
