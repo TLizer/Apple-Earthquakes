@@ -14,7 +14,9 @@ struct EarthquakesApp: App {
             ContentView(
                 viewModel: ContentViewModel(
                     quakesProvider: QuakesProvider.shared,
-                    context: QuakesProvider.shared.container.viewContext
+                    dataSource: QuakesFRCDataSource(
+                        context: QuakesProvider.shared.container.viewContext
+                    )
                 )
             )
         }

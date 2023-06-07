@@ -91,11 +91,13 @@ extension ContentView {
 
 struct ContentView_Previews: PreviewProvider {
     static let quakesProvider = QuakesProvider.preview
+    static let dataSource = QuakesFRCDataSource(context: quakesProvider.container.viewContext)
+    
     static var previews: some View {
         ContentView(
             viewModel: ContentViewModel(
                 quakesProvider: quakesProvider,
-                context: quakesProvider.container.viewContext
+                dataSource: dataSource
             )
         )
     }

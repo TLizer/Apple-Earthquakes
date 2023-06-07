@@ -8,7 +8,7 @@ A class to fetch data from the remote server and save it to the Core Data store.
 import CoreData
 import OSLog
 
-class QuakesProvider {
+class QuakesProvider: QuakesDataProvider {
 
     // MARK: USGS Data
 
@@ -34,7 +34,7 @@ class QuakesProvider {
     private let inMemory: Bool
     private var notificationToken: NSObjectProtocol?
 
-    private init(inMemory: Bool = false) {
+    init(inMemory: Bool = false) {
         self.inMemory = inMemory
 
         // Observe Core Data remote change notifications on the queue where the changes were made.

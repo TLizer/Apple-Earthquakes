@@ -7,11 +7,12 @@
 //
 
 import SwiftUI
-import CoreData
 
 final class ContentViewModel: ObservableObject {
-    private var quakesProvider: QuakesProvider
-    private var frc: NSFetchedResultsController<Quake>
+    // Here we are hiding dependencies behind protocol
+    // This allows us to easily exchange actual implementations with mocks
+    private var quakesProvider: QuakesDataProvider
+    private var dataSource: QuakesDataSource
     
     @AppStorage("lastUpdated")
     var lastUpdated = Date.distantFuture.timeIntervalSince1970
@@ -43,28 +44,18 @@ final class ContentViewModel: ObservableObject {
     }
     
     var quakes: [Quake] {
-        frc.fetchedObjects ?? []
+        dataSource.quakes
     }
     
     init(
-        quakesProvider: QuakesProvider = .shared,
-        context: NSManagedObjectContext
+        quakesProvider: QuakesDataProvider,
+        dataSource: QuakesDataSource
     ) {
         self.quakesProvider = quakesProvider
-        let request = NSFetchRequest<Quake>()
-        request.entity = Quake.entity()
-        request.sortDescriptors = [
-            NSSortDescriptor(key: "time", ascending: false)
-        ]
-        frc = .init(
-            fetchRequest: request,
-            managedObjectContext: context,
-            sectionNameKeyPath: nil,
-            cacheName: nil
-        )
-        try? frc.performFetch()
+        self.dataSource = dataSource
     }
     
+    // By moving functions from view into ViewModel itself those has become testable
     func deleteQuakes(at offsets: IndexSet) {
         let objectIDs = offsets.map { quakes[$0].objectID }
         quakesProvider.deleteQuakes(identifiedBy: objectIDs)

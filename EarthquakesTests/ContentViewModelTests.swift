@@ -10,15 +10,16 @@ import XCTest
 @testable import Earthquakes
 
 final class ContentViewModelTests: XCTestCase {
+    // Even though those properties are set once, nothing is being reused in between tests
+    // XCTest creates separate instance of XCTestCase class for each test function
+    let provider = FakeQuakesProvider()
+    let dataSource = FakeQuakesDataSource()
+    lazy var viewModel = ContentViewModel(
+        quakesProvider: provider,
+        dataSource: dataSource
+    )
 
     func testTitleWithEmptySelection() {
-        // Given ContentViewviewModel
-        let provider = QuakesProvider.preview
-        let viewModel = ContentViewModel(
-            quakesProvider: provider,
-            context: provider.container.viewContext
-        )
-        
         // When selection is empty
         viewModel.selection = []
         
@@ -28,13 +29,6 @@ final class ContentViewModelTests: XCTestCase {
     }
     
     func testTitleWithTwoSelections() {
-        // Given ContentViewviewModel
-        let provider = QuakesProvider.preview
-        let viewModel = ContentViewModel(
-            quakesProvider: provider,
-            context: provider.container.viewContext
-        )
-        
         // When selection contains two items
         viewModel.selection = ["1", "2"]
         
@@ -44,13 +38,6 @@ final class ContentViewModelTests: XCTestCase {
     }
     
     func testTitleWithTwoSelectionsAndActiveMode() {
-        // Given ContentViewviewModel
-        let provider = QuakesProvider.preview
-        let viewModel = ContentViewModel(
-            quakesProvider: provider,
-            context: provider.container.viewContext
-        )
-        
         // When selection contains two items but selectMode is active
         viewModel.selection = ["1", "2"]
         viewModel.selectMode = .active
@@ -61,13 +48,6 @@ final class ContentViewModelTests: XCTestCase {
     }
     
     func testDeleteQuakesAtOffsetsDeleteSelection() {
-        // Given ContentViewviewModel
-        let provider = QuakesProvider.preview
-        let viewModel = ContentViewModel(
-            quakesProvider: provider,
-            context: provider.container.viewContext
-        )
-        
         // When selection contains two items but selectMode is active
         viewModel.selection = ["1", "2"]
         
@@ -76,5 +56,54 @@ final class ContentViewModelTests: XCTestCase {
         
         // Then title should be "Earthquakes"
         XCTAssertTrue(viewModel.selection.isEmpty)
+    }
+    
+    // By default async functions are run on background threads managed by system.
+    // If code in tests needs to run on main thread (eg UI snapshots)
+    // then @MainActor can be used for that.
+    @MainActor
+    func testDeleteQuakesForCodesDeleteSelection() async {
+        // When selection contains two items but selectMode is active
+        viewModel.selection = ["1", "2"]
+        
+        XCTAssertEqual(provider.deleteQuakesCalledCount, 0)
+        // After delete quakes is performed
+        await viewModel.deleteQuakes(for: [])
+        
+        // Then title should be "Earthquakes"
+        XCTAssertTrue(viewModel.selection.isEmpty)
+        XCTAssertEqual(provider.deleteQuakesCalledCount, 1)
+    }
+    
+    func testDeleteQuakesForCodesDeleteSelectionWithExpectation() {
+        // When selection contains two items but selectMode is active
+        viewModel.selection = ["1", "2"]
+        print("Before callback")
+        
+        let expectation = self.expectation(description: "delete quakes")
+        
+        // Lets imagine we have interface that calls
+        // completion handler upon finishing its task.
+        // We need to "fulfill" expectation when work is finished
+        // so we can later on perform asserts.
+        Task { @MainActor in
+            await viewModel.deleteQuakes(for: [])
+            expectation.fulfill()
+        }
+        
+        // After delete quakes is performed (here we wait for expectation to be fulfilled)
+        waitForExpectations(timeout: 1)
+        
+        // Then selection should be empty
+        XCTAssertTrue(viewModel.selection.isEmpty)
+    }
+    
+    func testDeleteQuakesForCodesCallsProvider() async {
+        XCTAssertEqual(provider.deleteQuakesCalledCount, 0)
+        
+        await viewModel.deleteQuakes(for: [])
+        
+        // Here we assert that deleteQuakes was called on provider only once
+        XCTAssertEqual(provider.deleteQuakesCalledCount, 1)
     }
 }

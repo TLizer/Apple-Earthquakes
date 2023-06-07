@@ -24,6 +24,11 @@
 		ADDDB1812625242200241A73 /* QuakeRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDDB1802625242200241A73 /* QuakeRow.swift */; };
 		ADDDB1832625249600241A73 /* QuakeDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDDB1822625249600241A73 /* QuakeDetail.swift */; };
 		AE003E272A23F52400D36DFF /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE003E262A23F52400D36DFF /* ContentViewModel.swift */; };
+		AEB83E672A30BF7800068FC7 /* FakeQuakesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEB83E662A30BF7800068FC7 /* FakeQuakesProvider.swift */; };
+		AEB83E692A30D9A000068FC7 /* FakeQuakesDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEB83E682A30D9A000068FC7 /* FakeQuakesDataSource.swift */; };
+		AEB83E6D2A30DB9F00068FC7 /* QuakesDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEB83E6B2A30DB8300068FC7 /* QuakesDataProvider.swift */; };
+		AEB83E6F2A30DBAE00068FC7 /* QuakesDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEB83E6E2A30DBAE00068FC7 /* QuakesDataSource.swift */; };
+		AEB83E712A30DBDC00068FC7 /* QuakesFRCDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEB83E702A30DBDC00068FC7 /* QuakesFRCDataSource.swift */; };
 		AEBEFF2B2A26F72800358FD2 /* ContentViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEBEFF2A2A26F72800358FD2 /* ContentViewModelTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -60,6 +65,11 @@
 		ADDDB1802625242200241A73 /* QuakeRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuakeRow.swift; sourceTree = "<group>"; };
 		ADDDB1822625249600241A73 /* QuakeDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuakeDetail.swift; sourceTree = "<group>"; };
 		AE003E262A23F52400D36DFF /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
+		AEB83E662A30BF7800068FC7 /* FakeQuakesProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeQuakesProvider.swift; sourceTree = "<group>"; };
+		AEB83E682A30D9A000068FC7 /* FakeQuakesDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeQuakesDataSource.swift; sourceTree = "<group>"; };
+		AEB83E6B2A30DB8300068FC7 /* QuakesDataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuakesDataProvider.swift; sourceTree = "<group>"; };
+		AEB83E6E2A30DBAE00068FC7 /* QuakesDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuakesDataSource.swift; sourceTree = "<group>"; };
+		AEB83E702A30DBDC00068FC7 /* QuakesFRCDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuakesFRCDataSource.swift; sourceTree = "<group>"; };
 		AEBEFF282A26F72800358FD2 /* EarthquakesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EarthquakesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEBEFF2A2A26F72800358FD2 /* ContentViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -159,9 +169,11 @@
 		ADFCD5352630D167008A14D0 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				AEB83E6A2A30DB7A00068FC7 /* Protocols */,
 				AD43F1FE26158DAF0068AABC /* QuakesProvider.swift */,
 				AD43F1F826158CD50068AABC /* Quake.swift */,
 				AD43F1FC26158D5A0068AABC /* QuakeError.swift */,
+				AEB83E702A30DBDC00068FC7 /* QuakesFRCDataSource.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -176,9 +188,28 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		AEB83E652A30BF6800068FC7 /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				AEB83E662A30BF7800068FC7 /* FakeQuakesProvider.swift */,
+				AEB83E682A30D9A000068FC7 /* FakeQuakesDataSource.swift */,
+			);
+			path = Mocks;
+			sourceTree = "<group>";
+		};
+		AEB83E6A2A30DB7A00068FC7 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				AEB83E6B2A30DB8300068FC7 /* QuakesDataProvider.swift */,
+				AEB83E6E2A30DBAE00068FC7 /* QuakesDataSource.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
 		AEBEFF292A26F72800358FD2 /* EarthquakesTests */ = {
 			isa = PBXGroup;
 			children = (
+				AEB83E652A30BF6800068FC7 /* Mocks */,
 				AEBEFF2A2A26F72800358FD2 /* ContentViewModelTests.swift */,
 			);
 			path = EarthquakesTests;
@@ -295,14 +326,17 @@
 			files = (
 				ADDDB1812625242200241A73 /* QuakeRow.swift in Sources */,
 				AD43F1FF26158DAF0068AABC /* QuakesProvider.swift in Sources */,
+				AEB83E6D2A30DB9F00068FC7 /* QuakesDataProvider.swift in Sources */,
 				AD57B0F626561347005183D0 /* RefreshButton.swift in Sources */,
 				AD57B0F226561178005183D0 /* ToolbarStatus.swift in Sources */,
 				AD57B0FC26561547005183D0 /* EditButton.swift in Sources */,
 				ADDDB17F2625235600241A73 /* QuakeMagnitude.swift in Sources */,
 				AD43F1F226158A660068AABC /* Earthquakes.xcdatamodeld in Sources */,
 				AD43F1E626158A640068AABC /* EarthquakesApp.swift in Sources */,
+				AEB83E6F2A30DBAE00068FC7 /* QuakesDataSource.swift in Sources */,
 				AD57B0F926561484005183D0 /* DeleteButton.swift in Sources */,
 				AD57B1052656F405005183D0 /* SelectButton.swift in Sources */,
+				AEB83E712A30DBDC00068FC7 /* QuakesFRCDataSource.swift in Sources */,
 				AD57B10226561FE1005183D0 /* ContentView.swift in Sources */,
 				AD43F1FD26158D5A0068AABC /* QuakeError.swift in Sources */,
 				ADDDB1832625249600241A73 /* QuakeDetail.swift in Sources */,
@@ -315,7 +349,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AEB83E692A30D9A000068FC7 /* FakeQuakesDataSource.swift in Sources */,
 				AEBEFF2B2A26F72800358FD2 /* ContentViewModelTests.swift in Sources */,
+				AEB83E672A30BF7800068FC7 /* FakeQuakesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
