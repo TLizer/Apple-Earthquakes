@@ -1,6 +1,6 @@
 //
 //  ContentViewStateTests.swift
-//  ContentViewStateTests
+//  ContentViewModelTests
 //
 //  Created by Tomasz Lizer on 31/05/2023.
 //  Copyright © 2023 Apple. All rights reserved.
@@ -9,11 +9,15 @@
 import XCTest
 @testable import Earthquakes
 
-final class ContentViewStateTests: XCTestCase {
+final class ContentViewModelTests: XCTestCase {
 
     func testTitleWithEmptySelection() {
         // Given ContentViewState
-        let state = ContentViewState()
+        let provider = QuakesProvider.preview
+        let state = ContentViewModel(
+            quakesProvider: provider,
+            context: provider.container.viewContext
+        )
         
         // When selection is empty
         state.selection = []
@@ -25,7 +29,11 @@ final class ContentViewStateTests: XCTestCase {
     
     func testTitleWithTwoSelections() {
         // Given ContentViewState
-        let state = ContentViewState()
+        let provider = QuakesProvider.preview
+        let state = ContentViewModel(
+            quakesProvider: provider,
+            context: provider.container.viewContext
+        )
         
         // When selection contains two items
         state.selection = ["1", "2"]
@@ -37,7 +45,11 @@ final class ContentViewStateTests: XCTestCase {
     
     func testTitleWithTwoSelectionsAndActiveMode() {
         // Given ContentViewState
-        let state = ContentViewState()
+        let provider = QuakesProvider.preview
+        let state = ContentViewModel(
+            quakesProvider: provider,
+            context: provider.container.viewContext
+        )
         
         // When selection contains two items but selectMode is active
         state.selection = ["1", "2"]

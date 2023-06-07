@@ -25,11 +25,11 @@ class QuakesProvider {
     static let shared = QuakesProvider()
 
     /// A quakes provider for use with canvas previews.
-    static let preview: QuakesProvider = {
+    static var preview: QuakesProvider {
         let provider = QuakesProvider(inMemory: true)
         Quake.makePreviews(count: 10, provider: provider)
         return provider
-    }()
+    }
 
     private let inMemory: Bool
     private var notificationToken: NSObjectProtocol?
